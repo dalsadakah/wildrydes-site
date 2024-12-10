@@ -176,11 +176,16 @@ var WildRydes = window.WildRydes || {};
 
     function handleVerify(event) {
         var email = $('#emailInputVerify').val();
-        var code = $('#codeInputVerify').val();
+        var code = $('#codeInputVerify').val().trim();  // Trim whitespace from the confirmation code
         if (!isValidEmail(email)) {
             alert('Please enter a valid email address');
             return;
         }
+        if (!code) {
+            alert('Please enter a valid confirmation code');
+            return;
+        }
+
         event.preventDefault();
         verify(email, code,
             function verifySuccess(result) {
@@ -195,5 +200,4 @@ var WildRydes = window.WildRydes || {};
         );
     }
 }(jQuery));
-
 
