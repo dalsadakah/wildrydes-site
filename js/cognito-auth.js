@@ -1,5 +1,4 @@
 /*global WildRydes _config AmazonCognitoIdentity AWSCognito*/
-/*global WildRydes _config AmazonCognitoIdentity AWSCognito*/
 
 var WildRydes = window.WildRydes || {};
 
@@ -64,15 +63,13 @@ var WildRydes = window.WildRydes || {};
         };
         var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
 
-        userPool.signUp(toUsername(email), password, [attributeEmail], null,
-            function signUpCallback(err, result) {
-                if (!err) {
-                    onSuccess(result);
-                } else {
-                    onFailure(err);
-                }
+        userPool.signUp(email, password, [attributeEmail], null, function signUpCallback(err, result) {
+            if (!err) {
+                onSuccess(result);
+            } else {
+                onFailure(err);
             }
-        );
+        });
     }
 
     function signin(email, password, onSuccess, onFailure) {
@@ -82,7 +79,7 @@ var WildRydes = window.WildRydes || {};
         }
 
         var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-            Username: toUsername(email),
+            Username: email,  // Use raw email as username
             Password: password
         });
 
@@ -110,16 +107,9 @@ var WildRydes = window.WildRydes || {};
 
     function createCognitoUser(email) {
         return new AmazonCognitoIdentity.CognitoUser({
-            Username: toUsername(email),
+            Username: email,  // Use raw email as username
             Pool: userPool
         });
-    }
-
-    function toUsername(email) {
-        if (typeof email !== 'string' || !email.includes('@')) {
-            throw new Error("Invalid email format");
-        }
-        return email.replace('@', '-at-');
     }
 
     function isValidEmail(email) {
@@ -205,4 +195,5 @@ var WildRydes = window.WildRydes || {};
         );
     }
 }(jQuery));
+
 
