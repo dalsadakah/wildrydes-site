@@ -1,4 +1,5 @@
 /*global WildRydes _config AmazonCognitoIdentity AWSCognito*/
+/*global WildRydes _config AmazonCognitoIdentity AWSCognito*/
 
 var WildRydes = window.WildRydes || {};
 
@@ -47,12 +48,16 @@ var WildRydes = window.WildRydes || {};
         }
     });
 
-
     /*
      * Cognito User Pool functions
      */
 
     function register(email, password, onSuccess, onFailure) {
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+
         var dataEmail = {
             Name: 'email',
             Value: email
@@ -71,6 +76,11 @@ var WildRydes = window.WildRydes || {};
     }
 
     function signin(email, password, onSuccess, onFailure) {
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+
         var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
             Username: toUsername(email),
             Password: password
@@ -84,6 +94,11 @@ var WildRydes = window.WildRydes || {};
     }
 
     function verify(email, code, onSuccess, onFailure) {
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+
         createCognitoUser(email).confirmRegistration(code, true, function confirmCallback(err, result) {
             if (!err) {
                 onSuccess(result);
@@ -101,7 +116,14 @@ var WildRydes = window.WildRydes || {};
     }
 
     function toUsername(email) {
+        if (typeof email !== 'string' || !email.includes('@')) {
+            throw new Error("Invalid email format");
+        }
         return email.replace('@', '-at-');
+    }
+
+    function isValidEmail(email) {
+        return typeof email === 'string' && email.trim() && email.includes('@');
     }
 
     /*
@@ -117,6 +139,10 @@ var WildRydes = window.WildRydes || {};
     function handleSignin(event) {
         var email = $('#emailInputSignin').val();
         var password = $('#passwordInputSignin').val();
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
         event.preventDefault();
         signin(email, password,
             function signinSuccess() {
@@ -133,6 +159,10 @@ var WildRydes = window.WildRydes || {};
         var email = $('#emailInputRegister').val();
         var password = $('#passwordInputRegister').val();
         var password2 = $('#password2InputRegister').val();
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
 
         var onSuccess = function registerSuccess(result) {
             var cognitoUser = result.user;
@@ -157,6 +187,10 @@ var WildRydes = window.WildRydes || {};
     function handleVerify(event) {
         var email = $('#emailInputVerify').val();
         var code = $('#codeInputVerify').val();
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
         event.preventDefault();
         verify(email, code,
             function verifySuccess(result) {
@@ -171,3 +205,4 @@ var WildRydes = window.WildRydes || {};
         );
     }
 }(jQuery));
+
